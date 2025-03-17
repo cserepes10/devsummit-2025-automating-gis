@@ -1,0 +1,11 @@
+<details style="border: 1px solid #ccc; padding: 10px; border-radius: 5px;">
+    <summary style="cursor: pointer; font-size: 16px; font-weight: bold; padding: 10px; background-color: #0078d4; color: white; border-radius: 5px;">
+        Layers
+    </summary>
+
+    <div style="padding: 10px; margin-top: 10px;">
+        
+        {str(layer_description)}
+
+    </div>
+</details>
