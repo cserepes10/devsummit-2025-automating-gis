@@ -1,4 +1,5 @@
-import time
+
+import asyncio
 import urllib3
 import threading
 from arcgis.gis import GIS
@@ -23,7 +24,7 @@ def main():
     for thread in threads:
         thread.join()
 
-def application_webmap_finder(map_id, item_list, gis, push_descriptions):
+async def application_webmap_finder(map_id, item_list, gis, push_descriptions):
     for item in item_list:
         app_to_update = gis.content.get(item.id)
         if not app_to_update:
@@ -41,16 +42,16 @@ def application_webmap_finder(map_id, item_list, gis, push_descriptions):
             }
             #print(description)
             try:
-                app_to_update.update(item_properties=props)
+                await app_to_update.update(item_properties=props)
                 
             except:
                 pass
 def application_finder(map_id, gis, push_descriptions, query):
-    item_types = ['Dashboard', 'Application', 'Web Mapping Application']
+    item_types = ['Dashboard', 'Application', 'Web Mapping Application', 'Web Experience']
     for item_type in item_types:
         try:
             app_items = gis.content.search(query=query, item_type=item_type, max_items=1000)
-            application_webmap_finder(map_id, app_items, gis, push_descriptions)
+            asyncio.run(application_webmap_finder(map_id, app_items, gis, push_descriptions))
         except Exception as e:
             print(f"Error searching for {item_type}: {e}")
 
@@ -158,8 +159,11 @@ def process_web_map(web_map_item, gis, portal, query):
         application_finder(web_map_item.id, gis, push_descriptions, query)
     except Exception as e:
         print(f"Error processing web map {web_map_item.id}: {e}")
-        with open(r'./out-files/maps-to-delete.csv', '+a') as f:
-            f.write(f'{web_map_item.id}, {portal}\n')
+        try:
+            with open(r'C:\Users\bcserepes\Documents\COG_ADMIN\devsummit-2025-automating-gis\scripts\out-files\maps-to-delete.csv', '+a') as f:
+                f.write(f'{web_map_item.id}, {portal}\n')
+        except:
+            pass
             
 if __name__ == "__main__":
     main()
